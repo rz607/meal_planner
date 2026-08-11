@@ -53,3 +53,36 @@ def favorites_delete(request, pk):
         return Response(status=204)#success
     except SavedRecipe.DoesNotExist:
         return Response(status=404)#failure
+
+# Fetches full details for one recipe, 
+@api_view(["GET"])
+def recipe_detail(request, meal_id):
+    response = requests.get(f"https://www.themealdb.com/api/json/v1/1/lookup.php?i={meal_id}")
+    data = response.json()
+    meals = data.get("meals") or []
+
+    if not meals:
+        return Response({"error": "Recipe not found"}, status=404)
+
+    meal = meals[0]   # lookup returns a list with exactly one item
+
+    # TheMealDB spreads ingredients across strIngredient1..20 and strMeasure1..20
+    # loop collects them into a clean list, skipping empty slots
+    ingredients = []
+    for i in range(1, 21):
+        ingredient = meal.get(f"strIngredient{i}")
+        measure = meal.get(f"strMeasure{i}")
+        if ingredient and ingredient.strip():
+            ingredients.append({
+                "name": ingredient.strip(),
+                "measure": measure.strip() if measure else ""
+            })
+
+    result = {
+        "id": meal["idMeal"],
+        "name": meal["strMeal"],
+        "image": meal["strMealThumb"],
+        "instructions": meal["strInstructions"],
+        "ingredients": ingredients
+    }
+    return Response(result)
