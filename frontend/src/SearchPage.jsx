@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 
 function SearchPage() {
   // Holds whatever the user types in the search box
@@ -21,7 +22,7 @@ function SearchPage() {
   const detailResponse = await fetch(`http://localhost:8000/api/recipe/${recipe.id}/`)
   const detail = await detailResponse.json()
 
-  // Now save using the real ingredients, not an empty placeholder
+  //  saves using the real ingredients, not an empty placeholder
   await fetch('http://localhost:8000/api/favorites/', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -54,7 +55,7 @@ function SearchPage() {
         {results.map((recipe) => (
           <div key={recipe.id}>
             <img src={recipe.image} alt={recipe.name} width="100" />
-            <p>{recipe.name}</p>
+            <Link to={`/recipe/${recipe.id}`}>{recipe.name}</Link>
             <button onClick={() => handleSave(recipe)}>Save to Favorites</button>
           </div>
         ))}
