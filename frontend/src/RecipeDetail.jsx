@@ -7,15 +7,27 @@ function RecipeDetail() {
 
   const [recipe, setRecipe] = useState(null)
 
+  const [error, setError] = useState(false) 
+
   useEffect(() => {
     fetchRecipe()
   }, [id])   // re-runs if the id in the URL changes
 
   const fetchRecipe = async () => {
-    const response = await fetch(`http://localhost:8000/api/recipe/${id}/`)
-    const data = await response.json()
-    setRecipe(data)
+    try{
+      const response = await fetch(`http://localhost:8000/api/recipe/${id}/`)
+      const data = await response.json()
+      setRecipe(data)
+    } catch(error){
+        setError(true)
+    }
   }
+
+  //avoid getting stuck on loadding if fetch does fail
+  if (error) {
+  return <p className="empty-state">Could not load this recipe --- Please go back and try again.</p>
+  }
+
 
   // Show a loading state while the fetch is in progress
   if (!recipe) {
@@ -23,7 +35,7 @@ function RecipeDetail() {
   }
 
   return (
-    <div>
+    <div className="recipe-detail">
       <h1>{recipe.name}</h1>
       <img src={recipe.image} alt={recipe.name} width="200" />
 

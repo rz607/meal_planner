@@ -1,3 +1,4 @@
+import './App.css'
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
 import SearchPage from './SearchPage'
 import FavouritesPage from './FavouritesPage'

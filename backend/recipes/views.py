@@ -37,6 +37,9 @@ def favorites_list(request):
         return Response(serializer.data)
 
     elif request.method == "POST":
+        meal_id = request.data.get("meal_id")
+        if SavedRecipe.objects.filter(meal_id=meal_id).exists():
+            return Response({"error": "Recipe already saved"}, status=400)
         serializer = SavedRecipeSerializer(data=request.data)
         if serializer.is_valid():#check data matches model expectations
             serializer.save()
